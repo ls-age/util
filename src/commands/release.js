@@ -1,3 +1,4 @@
+import { readFile } from 'fs';
 import { join } from 'path';
 import { prompt } from 'inquirer';
 import standardVersion from 'standard-version';
@@ -112,7 +113,25 @@ export function publishRelease(opts) {
     }));
 }
 
-export function run(opts) {
+function undoRelease(env) {
+  return new Promise((resolve, reject) => {
+    readFile(env.packagePath, 'utf8', (readErr, contents) => {
+      if (readErr) {
+        reject(readErr);
+      } else {
+        try {
+          resolve(JSON.parse(contents).version);
+        } catch (e) {
+          reject(e);
+        }
+      }
+    });
+  })
+    .then(version => runExternal(`git tag -d v${version}`)) // Delete tag
+    .then(() => runExternal('git reset --hard HEAD~2')); // Undo release commits
+}
+
+export function run(opts, env) {
   // Validate required options
   if (opts.createRelease && !opts.githubToken) {
     return Promise.reject(new UsageError('Missing option "github-token"'));
@@ -140,6 +159,6 @@ export function run(opts) {
         return runStep('Publish release', publishRelease(opts));
       }
 
-      return runStep('Undo release', Promise.resolve());
+      return runStep('Undo release', undoRelease(env));
     });
 }
