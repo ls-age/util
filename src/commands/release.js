@@ -132,10 +132,6 @@ export function run(opts, env) {
     releaseAs = chosenReleaseType[0];
   }
 
-  /*runStep('Prepare release', this.prepareRelease(opts))
-   .then(() => runStep('Create release', createRelease(opts, releaseAs)))
-   .then(() => runStep('Confirm publish', confirmPublish(opts))) */
-
   return runStep('Prepare release', this.prepareRelease(opts))
     .then(() => runStep('Create release', createRelease(opts, releaseAs)))
     .then(() => confirmPublish(opts))
