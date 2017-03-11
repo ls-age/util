@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/commands/release.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/ls-age/util" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Util.js~Util.html">Util</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">commands</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-confirmPublish">confirmPublish</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createRelease">createRelease</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-prepareRelease">prepareRelease</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-run">run</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-options">options</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">lib/error</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/lib/error/AppError.js~AppError.html">AppError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/lib/error/RunError.js~RunError.html">RunError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/lib/error/UsageError.js~UsageError.html">UsageError</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">lib/utils</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-run">run</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-spawn">spawn</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/commands/release.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import { join } from &apos;path&apos;;
+import { prompt } from &apos;inquirer&apos;;
+import UsageError from &apos;../lib/error/UsageError&apos;;
+import AppError from &apos;../lib/error/AppError&apos;;
+import standardVersion from &apos;standard-version&apos;;
+import runExternal from &apos;../lib/utils/run&apos;;
+
+export const options = {
+  first: {
+    desc: &apos;Release without dumping new version&apos;,
+    type: &apos;boolean&apos;,
+    default: false,
+  },
+  major: {
+    desc: &apos;Release as next major version&apos;,
+    type: &apos;boolean&apos;,
+  },
+  minor: {
+    desc: &apos;Release as next minor version&apos;,
+    type: &apos;boolean&apos;,
+  },
+  patch: {
+    desc: &apos;Release as next patch version&apos;,
+    type: &apos;boolean&apos;,
+  },
+  pre: {
+    desc: &apos;Release as prerelease&apos;,
+    type: &apos;boolean&apos;,
+  },
+  &apos;github-token&apos;: {
+    desc: &apos;GitHub token to use&apos;,
+    type: &apos;string&apos;,
+    alias: &apos;t&apos;,
+  },
+  &apos;create-release&apos;: {
+    desc: &apos;Create GitHub release&apos;,
+    type: &apos;boolean&apos;,
+    default: true,
+  },
+  &apos;yes&apos;: {
+    desc: &apos;Publish without confirmation&apos;,
+    type: &apos;boolean&apos;,
+    default: false,
+  }
+};
+
+export function prepareRelease() {
+  return runExternal(&apos;git status --short&apos;)
+    .then(data =&gt; {
+      if (data) {
+        throw new Error(&apos;Working directory not clean&apos;);
+      }
+    })
+    .then(() =&gt; runExternal(&apos;git push&apos;))
+    .then(() =&gt; runExternal(&apos;npm run prepublish&apos;))
+}
+
+export function createRelease(opts, releaseAs) {
+  return runExternal(&apos;git add -f out&apos;)
+    .then(() =&gt; runExternal(&apos;git add -f docs/api&apos;))
+    .then(() =&gt; new Promise((resolve, reject) =&gt; {
+      standardVersion({
+        infile: join(__dirname, &apos;../../CHANGELOG.md&apos;),
+        firstRelease: opts.first,
+        releaseAs,
+        silent: true,
+        commitAll: true,
+      }, err =&gt; {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    }))
+    .then(() =&gt; runExternal(&apos;git rm -rf out&apos;))
+    .then(() =&gt; runExternal(&apos;git rm -rf docs/api&apos;))
+    .then(() =&gt; runExternal([&apos;git&apos;, &apos;commit&apos;, &apos;-m&apos;, &apos;&quot;chore(release): Remove generated files&quot;&apos;]))
+}
+
+export function confirmPublish(opts) {
+  if (opts.yes) {
+    return Promise.resolve(true);
+  }
+
+  return prompt([
+    {
+      type: &apos;confirm&apos;,
+      name: &apos;release&apos;,
+      message: &apos;Publish release?&apos;,
+    }
+  ])
+    .then(answers =&gt; answers.release);
+}
+
+export function run(opts, env) {
+  // Validate required options
+  if (opts.createRelease &amp;&amp; !opts.githubToken) {
+    return Promise.reject(new UsageError(&apos;Missing option &quot;github-token&quot;&apos;));
+  }
+
+  // Evaluate releaseAs
+  let releaseAs;
+  const releaseTypeOptions = [opts.major, opts.minor, opts.patch, opts.pre];
+  const chosenReleaseType = [&apos;major&apos;, &apos;minor&apos;, &apos;patch&apos;, &apos;prerelease&apos;]
+    .filter((type, i) =&gt; releaseTypeOptions[i]);
+
+  if (chosenReleaseType.length &gt; 1) {
+    return Promise.reject(new UsageError(
+      `Cannot release with multiple version types (${chosenReleaseType.join(&apos;, &apos;)} specified)`
+    ));
+  } else if (chosenReleaseType.length === 1) {
+    releaseAs = chosenReleaseType[0];
+  }
+
+  return this.prepareRelease(opts)
+    .then(() =&gt; createRelease(opts, releaseAs))
+    .then(() =&gt; confirmPublish(opts))
+    .then(publish =&gt; {
+      if (publish) {
+        console.log(&apos;Publish release&apos;);
+      } else {
+        console.log(&apos;Undo release&apos;);
+      }
+    })
+}
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
