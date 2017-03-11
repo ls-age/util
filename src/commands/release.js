@@ -1,4 +1,5 @@
 import { join } from 'path';
+import status from 'node-status';
 import { prompt } from 'inquirer';
 import UsageError from '../lib/error/UsageError';
 import AppError from '../lib/error/AppError';
@@ -37,11 +38,11 @@ export const options = {
     type: 'boolean',
     default: true,
   },
-  'yes': {
+  yes: {
     desc: 'Publish without confirmation',
     type: 'boolean',
     default: false,
-  }
+  },
 };
 
 export function prepareRelease() {
@@ -52,7 +53,7 @@ export function prepareRelease() {
       }
     })
     .then(() => runExternal('git push'))
-    .then(() => runExternal('npm run prepublish'))
+    .then(() => runExternal('npm run prepublish'));
 }
 
 export function createRelease(opts, releaseAs) {
@@ -113,14 +114,40 @@ export function run(opts, env) {
     releaseAs = chosenReleaseType[0];
   }
 
-  return this.prepareRelease(opts)
-    .then(() => createRelease(opts, releaseAs))
-    .then(() => confirmPublish(opts))
+  const job = status.addItem('job', {
+    steps: [
+      'Prepare release',
+    ]
+  });
+
+  status.start({ pattern: '{uptime.gray} {spinner.cyan} {job.step}' });
+
+  function runStep(name, step) {
+    job.steps.push(name);
+
+    return step
+      .then(res => {
+        job.doneStep(true);
+        return res;
+      })
+      .catch(err => {
+        job.doneStep(false);
+        throw err;
+      });
+  }
+
+  return runStep('Prepare release', this.prepareRelease(opts))
+    .then(() => runStep('Create release', createRelease(opts, releaseAs)))
+    .then(() => runStep('Confirm publish', confirmPublish(opts)))
     .then(publish => {
       if (publish) {
-        console.log('Publish release');
+        return runStep('Publish release', Promise.resolve());
       } else {
-        console.log('Undo release');
+        return runStep('Undo release', Promise.resolve());
       }
+    })
+    .then(() => status.stop(), err => {
+      status.stop();
+      throw err;
     })
 }
