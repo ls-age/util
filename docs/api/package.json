@@ -1,6 +1,6 @@
 {
   "name": "@lsage/util",
-  "version": "0.3.1",
+  "version": "0.3.0",
   "description": "ls-age utilities",
   "main": "out/index.js",
   "bin": {
