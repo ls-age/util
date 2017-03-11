@@ -1,8 +1,9 @@
 import spawn from './spawn';
 import RunError from '../error/RunError';
+import runStep from './runStep';
 
 export default function run(command, options) {
-  return spawn(command, options)
+  return runStep(command, spawn(command, options)
     .then(child => {
       return new Promise((resolve, reject) => {
         let output = '';
@@ -19,5 +20,6 @@ export default function run(command, options) {
           }
         });
       });
-    });
+    })
+  );
 }

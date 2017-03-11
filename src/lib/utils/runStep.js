@@ -1,9 +1,15 @@
 import colors from 'chalk';
 
-export default function runStep(name, step, inset = '') {
-  process.stdout.write(`-  ${name}`);
+let inStep = 0;
+
+export default function runStep(name, step) {
+  const inset = '  '.repeat(inStep);
+  inStep++;
+
+  process.stdout.write(`${inset}-  ${name}`);
 
   function clear() {
+    inStep--;
     process.stdout.clearLine();
     process.stdout.cursorTo(0);
   }
