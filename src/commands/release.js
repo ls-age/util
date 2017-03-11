@@ -1,10 +1,11 @@
 import { join } from 'path';
-import status from 'node-status';
 import { prompt } from 'inquirer';
+import githubReleaser from 'conventional-github-releaser';
 import UsageError from '../lib/error/UsageError';
 import AppError from '../lib/error/AppError';
 import standardVersion from 'standard-version';
 import runExternal from '../lib/utils/run';
+import runStep from '../lib/utils/runStep';
 
 export const options = {
   first: {
@@ -89,9 +90,26 @@ export function confirmPublish(opts) {
       type: 'confirm',
       name: 'release',
       message: 'Publish release?',
-    }
+    },
   ])
     .then(answers => answers.release);
+}
+
+export function publishRelease(opts) {
+  return runExternal('git push')
+    .then(() => runExternal('git push --tags'))
+    .then(() => new Promise((resolve, reject) => {
+      githubReleaser({
+        type: 'oauth',
+        token: opts.githubToken,
+      }, { preset: 'angular' }, err => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    }));
 }
 
 export function run(opts, env) {
@@ -114,40 +132,18 @@ export function run(opts, env) {
     releaseAs = chosenReleaseType[0];
   }
 
-  const job = status.addItem('job', {
-    steps: [
-      'Prepare release',
-    ]
-  });
-
-  status.start({ pattern: '{uptime.gray} {spinner.cyan} {job.step}' });
-
-  function runStep(name, step) {
-    job.steps.push(name);
-
-    return step
-      .then(res => {
-        job.doneStep(true);
-        return res;
-      })
-      .catch(err => {
-        job.doneStep(false);
-        throw err;
-      });
-  }
+  /*runStep('Prepare release', this.prepareRelease(opts))
+   .then(() => runStep('Create release', createRelease(opts, releaseAs)))
+   .then(() => runStep('Confirm publish', confirmPublish(opts))) */
 
   return runStep('Prepare release', this.prepareRelease(opts))
     .then(() => runStep('Create release', createRelease(opts, releaseAs)))
-    .then(() => runStep('Confirm publish', confirmPublish(opts)))
+    .then(() => confirmPublish(opts))
     .then(publish => {
       if (publish) {
-        return runStep('Publish release', Promise.resolve());
+        return runStep('Publish release', publishRelease(opts));
       } else {
         return runStep('Undo release', Promise.resolve());
       }
-    })
-    .then(() => status.stop(), err => {
-      status.stop();
-      throw err;
-    })
+    });
 }
