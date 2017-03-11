@@ -1,5 +1,5 @@
 import colors from 'chalk';
-import { dots as spinner } from 'cli-spinner';
+import { dots as spinner } from 'cli-spinners';
 
 export default function runStep(name, step) {
   let frame = -1;
