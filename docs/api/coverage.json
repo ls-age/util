@@ -1,0 +1,70 @@
+{
+  "coverage": "0%",
+  "expectCount": 21,
+  "actualCount": 0,
+  "files": {
+    "src/lib/error/AppError.js": {
+      "expectCount": 4,
+      "actualCount": 0,
+      "undocumentLines": [
+        1,
+        3,
+        6,
+        9
+      ]
+    },
+    "src/lib/error/RunError.js": {
+      "expectCount": 4,
+      "actualCount": 0,
+      "undocumentLines": [
+        3,
+        8,
+        5,
+        11
+      ]
+    },
+    "src/lib/error/UsageError.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        1
+      ]
+    },
+    "src/Util.js": {
+      "expectCount": 8,
+      "actualCount": 0,
+      "undocumentLines": [
+        11,
+        13,
+        20,
+        35,
+        17,
+        96,
+        14,
+        31
+      ]
+    },
+    "src/commands/release.js": {
+      "expectCount": 2,
+      "actualCount": 0,
+      "undocumentLines": [
+        7,
+        41
+      ]
+    },
+    "src/lib/utils/run.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        4
+      ]
+    },
+    "src/lib/utils/spawn.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        4
+      ]
+    }
+  }
+}
