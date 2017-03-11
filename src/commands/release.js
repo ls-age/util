@@ -72,6 +72,7 @@ export function run(opts, env) {
         firstRelease: options.first,
         releaseAs,
         silent: true,
+        commitAll: true,
       }, err => {
         if (err) {
           reject(err);
