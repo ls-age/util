@@ -4,11 +4,21 @@ import { dots as spinner } from 'cli-spinners';
 export default function runStep(name, step) {
   let frame = -1;
 
+  function clear() {
+    process.stdout.clearLine();
+    process.stdout.cursorTo(0);
+  }
+
   function render() {
+    if (frame !== -1) {
+      clear();
+    }
+
     frame++;
     if (frame === spinner.frames.length) {
       frame = 0;
     }
+
     process.stdout.write(`${spinner.frames[frame]} ${name}`);
   }
 
@@ -16,8 +26,11 @@ export default function runStep(name, step) {
 
   function end(sign) {
     clearInterval(interval);
-    process.stdout.clearLine();
-    process.stdout.cursorTo(0);
+
+    if (frame !== -1) {
+      clear();
+    }
+
     process.stdout.write(`${colors.green(sign)}${colors.bold(name)}\n`);
   }
 
