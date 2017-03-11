@@ -83,6 +83,6 @@ export function run(opts, env) {
     }))
     .then(() => runExternal('git rm -rf out'))
     .then(() => runExternal('git rm -rf docs/api'))
-    .then(() => runExternal('git commit -m "chore(release): Remove generated files"'))
+    .then(() => runExternal(['git', 'commit', '-m', '"chore(release): Remove generated files"']))
     .then(() => console.log('Now, create github release', opts.createRelease));
 }
