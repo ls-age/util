@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.3.0"></a>
+# [0.3.0](https://github.com/ls-age/util/compare/v0.2.3...v0.3.0) (2017-03-11)
+
+
+### Bug Fixes
+
+* **runStep:** Clear line first ([b501c79](https://github.com/ls-age/util/commit/b501c79))
+* **runStep:** Replace invalid dependency ([2e248d7](https://github.com/ls-age/util/commit/2e248d7))
+
+
+### Features
+
+* **runStep:** Add spinner ([d46016c](https://github.com/ls-age/util/commit/d46016c))
+
+
+
 <a name="0.2.3"></a>
 ## [0.2.3](https://github.com/ls-age/util/compare/v0.2.2...v0.2.3) (2017-03-11)
 
