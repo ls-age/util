@@ -62,7 +62,7 @@ export function run(opts, env) {
         throw new Error('Working directory not clean');
       }
     })
-    .then(() => runExternal('git', ['push']))
+    .then(() => runExternal('git push'))
     .then(() => runExternal('npm run prepublish'))
     .then(() => runExternal('git add -f out'))
     .then(() => runExternal('git add -f docs/api'))
