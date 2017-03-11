@@ -10,6 +10,7 @@
     "compile": "babel src --out-dir out",
     "compile:watch": "npm run compile -- --watch",
     "docs": "esdoc -c esdoc.json",
+    "lint": "eslint src",
     "prepublish": "npm run compile && npm run docs",
     "test": "mocha --require babel-register"
   },

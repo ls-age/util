@@ -1,9 +1,9 @@
 import { join } from 'path';
 import { prompt } from 'inquirer';
+import standardVersion from 'standard-version';
 import githubReleaser from 'conventional-github-releaser';
 import UsageError from '../lib/error/UsageError';
 import AppError from '../lib/error/AppError';
-import standardVersion from 'standard-version';
 import runExternal from '../lib/utils/run';
 import runStep from '../lib/utils/runStep';
 
@@ -77,7 +77,7 @@ export function createRelease(opts, releaseAs) {
     }))
     .then(() => runExternal('git rm -rf out'))
     .then(() => runExternal('git rm -rf docs/api'))
-    .then(() => runExternal(['git', 'commit', '-m', '"chore(release): Remove generated files"']))
+    .then(() => runExternal(['git', 'commit', '-m', '"chore(release): Remove generated files"']));
 }
 
 export function confirmPublish(opts) {
@@ -112,7 +112,7 @@ export function publishRelease(opts) {
     }));
 }
 
-export function run(opts, env) {
+export function run(opts) {
   // Validate required options
   if (opts.createRelease && !opts.githubToken) {
     return Promise.reject(new UsageError('Missing option "github-token"'));
@@ -138,8 +138,8 @@ export function run(opts, env) {
     .then(publish => {
       if (publish) {
         return runStep('Publish release', publishRelease(opts));
-      } else {
-        return runStep('Undo release', Promise.resolve());
       }
+
+      return runStep('Undo release', Promise.resolve());
     });
 }
