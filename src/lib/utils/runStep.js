@@ -19,7 +19,7 @@ export default function runStep(name, step) {
       frame = 0;
     }
 
-    process.stdout.write(`${spinner.frames[frame]} ${name}`);
+    process.stdout.write(`${colors.cyan(spinner.frames[frame])} ${name}`);
   }
 
   const interval = setInterval(render, spinner.interval);
