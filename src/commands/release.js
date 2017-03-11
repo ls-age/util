@@ -4,7 +4,6 @@ import { prompt } from 'inquirer';
 import standardVersion from 'standard-version';
 import githubReleaser from 'conventional-github-releaser';
 import UsageError from '../lib/error/UsageError';
-import AppError from '../lib/error/AppError';
 import runExternal from '../lib/utils/run';
 import runStep from '../lib/utils/runStep';
 
