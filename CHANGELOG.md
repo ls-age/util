@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.4.1"></a>
+## [0.4.1](https://github.com/ls-age/util/compare/v0.4.0...v0.4.1) (2017-03-12)
+
+
+### Bug Fixes
+
+* **release:** Pick changelog from CWD ([#1](https://github.com/ls-age/util/issues/1)) ([8ff9ff3](https://github.com/ls-age/util/commit/8ff9ff3))
+
+
+### Features
+
+* **realease:** Run prepublish script before adding build files ([66c4047](https://github.com/ls-age/util/commit/66c4047))
+
+
+
 <a name="0.4.0"></a>
 # [0.4.0](https://github.com/ls-age/util/compare/v0.3.1...v0.4.0) (2017-03-11)
 
