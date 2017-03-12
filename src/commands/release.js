@@ -58,7 +58,8 @@ export function prepareRelease() {
 }
 
 export function createRelease(opts, releaseAs) {
-  return runExternal('git add -f out')
+  return runExternal('npm run prepublish')
+    .then(() => runExternal('git add -f out'))
     .then(() => runExternal('git add -f docs/api'))
     .then(() => new Promise((resolve, reject) => {
       standardVersion({
