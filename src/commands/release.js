@@ -78,7 +78,7 @@ export function createRelease(opts, releaseAs) {
     }))
     .then(() => runExternal('git rm -rf out'))
     .then(() => runExternal('git rm -rf docs/api'))
-    .then(() => runExternal(['git', 'commit', '-m', '"chore(release): Remove generated files"']));
+    .then(() => runExternal(['git', 'commit', '-m', 'chore(release): Remove generated files [ci skip]']));
 }
 
 export function confirmPublish(opts) {
