@@ -62,7 +62,7 @@ export function createRelease(opts, releaseAs) {
     .then(() => runExternal('git add -f docs/api'))
     .then(() => new Promise((resolve, reject) => {
       standardVersion({
-        infile: join(__dirname, '../../CHANGELOG.md'),
+        infile: join(process.cwd(), 'CHANGELOG.md'),
         firstRelease: opts.first,
         releaseAs,
         silent: true,
